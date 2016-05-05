@@ -35,13 +35,6 @@ private:
   virtual void beginJob() ;
   virtual bool filter(edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
-  
-  /*
-  virtual bool beginRun(edm::Run&, edm::EventSetup const&);
-  virtual bool endRun(edm::Run&, edm::EventSetup const&);
-  virtual bool beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-  virtual bool endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-  */
 
   edm::InputTag muonInputTag_;
   edm::InputTag pfMETInputTag_;
@@ -137,7 +130,7 @@ WmunuFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   
   if ( nMuons == 1 ) 
   {
-    csvOut_<< iEvent.id().run()<<","<< iEvent.id().event() <<","<< muPt <<","<< muEta <<","<< muPhi <<","<< Q <<","<< MET <<", "<< phiMET <<std::endl;
+    csvOut_<< iEvent.id().run()<<","<< iEvent.id().event() <<","<< muPt <<","<< muEta <<","<< muPhi <<","<< Q <<","<< MET <<","<< phiMET <<std::endl;
     return true;
   }
   
@@ -153,31 +146,5 @@ WmunuFilter::beginJob()
 void 
 WmunuFilter::endJob() {
 }
-
-/*
-bool 
-WmunuFilter::beginRun(edm::Run&, edm::EventSetup const&)
-{ 
-  return true;
-}
-
-bool 
-WmunuFilter::endRun(edm::Run&, edm::EventSetup const&)
-{
-  return true;
-}
-
-bool 
-WmunuFilter::beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
-  return true;
-}
-
-bool 
-WmunuFilter::endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
-  return true;
-}
-*/
 
 DEFINE_FWK_MODULE(WmunuFilter);
