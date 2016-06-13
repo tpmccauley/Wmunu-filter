@@ -21,9 +21,8 @@ process.source.lumisToProcess.extend(myLumis)
 process.load('WmunuFilter.WmunuFilter.WmunuFilter_cfi')
 
 process.WmunuFilter.csvFileName = cms.string('Wmunu_Run2011A.csv')
-process.WmunuFilter.minMuonPt = cms.double(20.0)
+process.WmunuFilter.minMuonPt = cms.double(25.0)
 process.WmunuFilter.maxMuonEta = cms.double(2.1)
-process.WmunuFilter.maxRelIso = cms.double(0.15)
 
 process.maxEvents = cms.untracked.PSet(input = cms.untracked.int32(500000))
 

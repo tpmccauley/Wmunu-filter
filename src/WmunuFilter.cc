@@ -43,7 +43,6 @@ private:
   std::string csvFileName_;
   double minMuonPt_;
   double maxMuonEta_;
-  double maxRelIso_;
 };
 
 WmunuFilter::WmunuFilter(const edm::ParameterSet& iConfig)
@@ -51,8 +50,7 @@ WmunuFilter::WmunuFilter(const edm::ParameterSet& iConfig)
     pfMETInputTag_(iConfig.getParameter<edm::InputTag>("pfMETInputTag")),
     csvFileName_(iConfig.getParameter<std::string>("csvFileName")),
     minMuonPt_(iConfig.getParameter<double>("minMuonPt")),
-    maxMuonEta_(iConfig.getParameter<double>("maxMuonEta")),
-    maxRelIso_(iConfig.getParameter<double>("maxRelIso"))
+    maxMuonEta_(iConfig.getParameter<double>("maxMuonEta"))
 {    
   csvOut_.open(csvFileName_.c_str());
 }
@@ -96,8 +94,7 @@ WmunuFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
     return false;
   
 
-  double pt, eta;
-  double relIso;
+  double pt, eta, iso, chiSq, dxy;
   unsigned int nMuons = 0;
 
   double muPt, muEta, muPhi, Q;
@@ -111,12 +108,14 @@ WmunuFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
     {   
       pt = (*it).globalTrack()->pt();      
       eta = (*it).globalTrack()->eta();
-      relIso = ((*it).isolationR03().sumPt + (*it).isolationR03().emEt + (*it).isolationR03().hadEt) / pt;
+      iso = (*it).isolationR03().sumPt + (*it).isolationR03().emEt + (*it).isolationR03().hadEt;
+      chiSq = (*it).globalTrack()->normalizedChi2();
+      dxy = (*it).globalTrack()->dxy();
 
-      if ( pt > 10 && nMuons >= 1 )
+      if ( pt > 10 && fabs(eta) < 2.4 && nMuons >= 1 )
         return false;
 
-      if ( pt > minMuonPt_ && fabs(eta) < maxMuonEta_ && relIso < maxRelIso_ )
+      if ( pt > minMuonPt_ && fabs(eta) < maxMuonEta_ )
       {
         nMuons++;
 
@@ -130,7 +129,7 @@ WmunuFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
   
   if ( nMuons == 1 ) 
   {
-    csvOut_<< iEvent.id().run()<<","<< iEvent.id().event() <<","<< muPt <<","<< muEta <<","<< muPhi <<","<< Q <<","<< MET <<","<< phiMET <<std::endl;
+    csvOut_<< iEvent.id().run()<<","<< iEvent.id().event() <<","<< muPt <<","<< muEta <<","<< muPhi <<","<< Q <<","<< chiSq <<","<< dxy <<","<< iso <<","<< MET <<","<< phiMET <<std::endl;
     return true;
   }
   
@@ -140,7 +139,7 @@ WmunuFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 void 
 WmunuFilter::beginJob()
 {
-  csvOut_<<"Run,Event,pt,eta,phi,Q,MET,phiMET"<<std::endl;
+  csvOut_<<"Run,Event,pt,eta,phi,Q,chiSq,dxy,iso,MET,phiMET"<<std::endl;
 }
 
 void 
